@@ -28,7 +28,7 @@ data class ArtSpec(val pattern: String, val seed: Long, val colors: List<Int>) {
                 val pattern = o.getString("p")
                 val seed = o.getString("s").toLong()
                 val arr = o.getJSONArray("c")
-                if (arr.length() == 0) return null
+                if (arr.length() == 0 || arr.length() > 32) return null
                 val colors = (0 until arr.length()).map { parseHex(arr.getString(it)) ?: return null }
                 ArtSpec(pattern, seed, colors)
             } catch (e: Exception) {
