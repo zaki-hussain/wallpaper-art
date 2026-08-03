@@ -146,8 +146,11 @@ object PaletteGen {
     fun extendTo(colors: List<Int>, n: Int, rng: Rng): List<Int> {
         if (colors.size >= n) return colors.take(n)
         val out = colors.toMutableList()
+        val baseCount = out.size
+        var added = 0
         while (out.size < n) {
-            val src = out[if (out.size == 1) 0 else 1 + (out.size - 1) % (out.size - 1)]
+            val src = out[if (baseCount == 1) 0 else 1 + added % (baseCount - 1)]
+            added++
             val (l, c, h) = Oklab.argbToOklch(src).let { Triple(it[0], it[1], it[2]) }
             val newL = when {
                 out.size == 1 && l > 0.5 -> l - rng.range(0.35, 0.5)   // derive fg from light bg

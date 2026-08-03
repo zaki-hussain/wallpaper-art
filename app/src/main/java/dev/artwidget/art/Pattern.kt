@@ -4,7 +4,8 @@ import android.graphics.Canvas
 
 /**
  * A procedural pattern. Implementations must:
- *  - draw only with the supplied colours (alpha/blend variations of them are fine);
+ *  - draw only with the supplied colours (alpha, blends, or small lightness
+ *    adjustments derived from them are fine);
  *  - treat colors[0] as the background (the canvas is pre-filled with it) and later
  *    indices as progressively more sparing accents;
  *  - derive every dimension from w/h (no absolute pixel sizes) so art scales cleanly;
