@@ -97,6 +97,21 @@ class EngineTest {
     }
 
     @Test
+    fun randomSpecSweepNeverCrashes() {
+        // Broad sweep across patterns, palettes, and awkward sizes.
+        val sizes = listOf(64 to 64, 977 to 311, 123 to 789, 500 to 500)
+        for (i in 0 until 200) {
+            val rng = Rng(i.toLong())
+            val pattern = Patterns.all[rng.int(Patterns.all.size)]
+            val n = rng.int(pattern.colorRange)
+            val spec = ArtSpec(pattern.id, rng.nextLong(), PaletteGen.generate(n, rng))
+            val (w, h) = sizes[i % sizes.size]
+            val bmp = ArtRenderer.render(spec, w, h)
+            assertEquals(w, bmp.width)
+        }
+    }
+
+    @Test
     fun rngIsStable() {
         // Guard: the PRNG algorithm must never change, or saved seeds would change art.
         val rng = Rng(123456789L)
