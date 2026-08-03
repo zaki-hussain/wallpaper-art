@@ -54,6 +54,11 @@ class EngineTest {
         assertNull(ArtSpec.fromJson("""{"v":1,"p":"solid","s":"1","c":["#11223"]}"""))
         assertNull(ArtSpec.fromJson("""{"v":1,"p":"solid","s":"1","c":[]}"""))
         assertNotNull(ArtSpec.fromJson("""{"v":1,"p":"solid","s":"1","c":["#112233"]}"""))
+        // Hostile input: deep nesting and oversized payloads must be rejected, not crash.
+        assertNull(ArtSpec.fromJson("{\"a\":".repeat(50_000)))
+        assertNull(ArtSpec.fromJson("[".repeat(3_000)))
+        val manyColors = (0 until 40).joinToString(",") { "\"#112233\"" }
+        assertNull(ArtSpec.fromJson("""{"v":1,"p":"solid","s":"1","c":[$manyColors]}"""))
     }
 
     @Test

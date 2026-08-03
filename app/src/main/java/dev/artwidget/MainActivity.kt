@@ -73,7 +73,7 @@ class MainActivity : Activity() {
     private fun setCurrent(spec: ArtSpec) {
         store.current = spec
         artView.spec = spec
-        ArtWidgetProvider.updateAll(this)
+        ArtWidgetProvider.updateAllAsync(this)
     }
 
     private fun refreshSaved() {

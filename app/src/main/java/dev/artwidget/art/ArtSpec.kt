@@ -23,15 +23,21 @@ data class ArtSpec(val pattern: String, val seed: Long, val colors: List<Int>) {
 
     companion object {
         fun fromJson(text: String): ArtSpec? {
+            val t = text.trim()
+            // Real codes are tiny; the cap also keeps hostile deeply nested JSON from
+            // exhausting the parser's recursion depth.
+            if (t.isEmpty() || t.length > 4096) return null
             return try {
-                val o = JSONObject(text.trim())
+                val o = JSONObject(t)
                 val pattern = o.getString("p")
                 val seed = o.getString("s").toLong()
                 val arr = o.getJSONArray("c")
                 if (arr.length() == 0 || arr.length() > 32) return null
                 val colors = (0 until arr.length()).map { parseHex(arr.getString(it)) ?: return null }
                 ArtSpec(pattern, seed, colors)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
+                // Throwable, not Exception: org.json recursion can throw
+                // StackOverflowError on hostile input, and import must never crash.
                 null
             }
         }
