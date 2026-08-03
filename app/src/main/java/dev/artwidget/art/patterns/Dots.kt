@@ -52,10 +52,10 @@ object DotsPattern : Pattern {
         val spacing = (size * rng.range(0.05f, 0.09f)).coerceAtLeast(1e-4f)
         val hexRows = rng.chance(0.5)
         val rowH = if (hexRows) spacing * 0.8660254f else spacing
-        val baseR = spacing * rng.range(0.16f, 0.34f)
+        val baseR = spacing * rng.range(0.22f, 0.38f)
         val jitter = spacing * rng.range(0.03f, 0.09f)
         val sizeScale = rng.range(1.2, 2.6)
-        val quiet = rng.range(0.20, 0.36) // portion of the noise range that collapses to zero
+        val quiet = rng.range(0.08, 0.2) // portion of the noise range that collapses to zero
 
         // Spatial colour bands along a random direction, wobbled by noise.
         val bandAngle = rng.range(0.0, Math.PI * 2)
@@ -87,11 +87,15 @@ object DotsPattern : Pattern {
                 val px = x + rng.range(-jitter, jitter)
                 val py = y + rng.range(-jitter, jitter)
 
-                // Radius from fbm: values below the quiet cut vanish entirely.
-                val v = (sizeNoise.fbm(px / size * sizeScale, py / size * sizeScale, 3) + 1.0) * 0.5
+                // Radius from fbm, stretched to fill its range. Most dots stay present
+                // (radius breathing between ~40% and 100%); only values under the quiet
+                // cut vanish, leaving occasional calm holes in the grid.
+                val stretched = (sizeNoise.fbm(px / size * sizeScale, py / size * sizeScale, 3) * 1.7)
+                    .coerceIn(-1.0, 1.0)
+                val v = (stretched + 1.0) * 0.5
                 var f = ((v - quiet) / (1.0 - quiet)).coerceIn(0.0, 1.0)
                 f = f * f * (3.0 - 2.0 * f)
-                val r = baseR * f.toFloat()
+                val r = if (v < quiet) 0f else baseR * (0.4f + 0.6f * f.toFloat())
                 if (r > size * 0.0012f) {
                     var t = ((px * dirX + py * dirY - projMin) / span).toDouble()
                     t += zoneNoise.fbm(px / size * wobbleScale, py / size * wobbleScale, 3) * wobbleAmp

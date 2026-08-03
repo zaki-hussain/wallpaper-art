@@ -38,26 +38,39 @@ private fun weightedIndex(rng: Rng, count: Int): Int {
 }
 
 /**
- * Hand-placed-feeling scatter: shuffled cells of a 3x3 grid over the canvas,
- * each jittered. Returns [fx, fy] fractions of w/h; jitter can push points
- * slightly beyond the canvas.
+ * Hand-placed-feeling scatter over a jittered 3x3 grid, greedily picking cells that
+ * maximise the minimum distance to those already chosen, so small counts still spread
+ * across the whole canvas instead of clustering in one corner. Returns [fx, fy]
+ * fractions of w/h; jitter can push points slightly beyond the canvas.
  */
-private fun jitteredAnchors(rng: Rng, count: Int, jitter: Float): List<FloatArray> {
+private fun spreadAnchors(rng: Rng, count: Int, jitter: Float): List<FloatArray> {
     val fractions = floatArrayOf(1f / 6f, 0.5f, 5f / 6f)
     val cells = ArrayList<FloatArray>(9)
     for (gy in fractions) for (gx in fractions) cells.add(floatArrayOf(gx, gy))
-    val order = rng.shuffled(cells)
-    val out = ArrayList<FloatArray>(count)
-    for (i in 0 until count) {
-        val c = order[i % order.size]
-        out.add(
-            floatArrayOf(
-                c[0] + rng.range(-jitter, jitter),
-                c[1] + rng.range(-jitter, jitter)
-            )
-        )
+    val pool = rng.shuffled(cells).toMutableList()
+    val chosen = ArrayList<FloatArray>(count)
+    chosen.add(pool.removeAt(0))
+    while (chosen.size < count && pool.isNotEmpty()) {
+        var bestIdx = 0
+        var bestDist = -1f
+        for (i in pool.indices) {
+            var minD = Float.MAX_VALUE
+            for (c in chosen) {
+                val dx = pool[i][0] - c[0]
+                val dy = pool[i][1] - c[1]
+                val d = dx * dx + dy * dy
+                if (d < minD) minD = d
+            }
+            if (minD > bestDist) {
+                bestDist = minD
+                bestIdx = i
+            }
+        }
+        chosen.add(pool.removeAt(bestIdx))
     }
-    return out
+    return chosen.map {
+        floatArrayOf(it[0] + rng.range(-jitter, jitter), it[1] + rng.range(-jitter, jitter))
+    }
 }
 
 /** A single soft radial gradient from an off-centre focal point. */
@@ -120,22 +133,23 @@ object MeshPattern : Pattern {
     override fun draw(canvas: Canvas, w: Float, h: Float, colors: List<Int>, rng: Rng) {
         val size = min(w, h)
         val fg = colors.drop(1)
-        val count = rng.int(4..8)
-        val anchors = jitteredAnchors(rng, count, 0.24f)
+        val count = rng.int(3..6)
+        val anchors = spreadAnchors(rng, count, 0.22f)
 
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
         for (i in 0 until count) {
             // Cycle through the foreground colours, primary first (and therefore
-            // most often), so accents stay sparing.
+            // most often), so accents stay sparing. Strong core alpha keeps hues
+            // luminous instead of milky where glows overlap.
             val c = fg[i % fg.size]
             val cx = w * anchors[i][0]
             val cy = h * anchors[i][1]
-            val r = size * rng.range(0.35f, 0.9f)
-            val a = rng.int(75..135)
+            val r = size * rng.range(0.45f, 1.05f)
+            val a = rng.int(150..225)
             paint.shader = RadialGradient(
                 cx, cy, r,
-                intArrayOf(withAlpha(c, a), withAlpha(c, (a * 0.45f).toInt()), c and 0x00FFFFFF),
-                floatArrayOf(0f, 0.55f, 1f),
+                intArrayOf(withAlpha(c, a), withAlpha(c, (a * 0.6f).toInt()), c and 0x00FFFFFF),
+                floatArrayOf(0f, 0.6f, 1f),
                 Shader.TileMode.CLAMP
             )
             canvas.drawCircle(cx, cy, r, paint)
@@ -155,8 +169,8 @@ object BlobsPattern : Pattern {
         val noise = Noise(rng.fork())
         val size = min(w, h)
         val fg = colors.drop(1)
-        val count = rng.int(2..5)
-        val anchors = jitteredAnchors(rng, count, 0.2f)
+        val count = rng.int(3..5)
+        val anchors = spreadAnchors(rng, count, 0.16f)
 
         // Centre + base radius per blob; sorted so the largest is drawn first
         // (at the back) and carries the primary colour.
@@ -166,7 +180,7 @@ object BlobsPattern : Pattern {
                 floatArrayOf(
                     w * anchors[i][0],
                     h * anchors[i][1],
-                    size * rng.range(0.175f, 0.375f)
+                    size * rng.range(0.2f, 0.4f)
                 )
             )
         }
@@ -215,7 +229,9 @@ object BlobsPattern : Pattern {
             }
             path.close()
 
-            val colorIndex = if (b == 0) 0 else weightedIndex(rng, fg.size)
+            // Cycle colours for the first few blobs so neighbours always differ,
+            // then fall back to weighted picks.
+            val colorIndex = if (b < fg.size) b else weightedIndex(rng, fg.size)
             paint.color = withAlpha(fg[colorIndex], rng.int(224..240))
             canvas.drawPath(path, paint)
         }
