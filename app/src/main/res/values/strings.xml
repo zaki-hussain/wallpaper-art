@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Art Widget</string>
+    <string name="widget_description">Generated art for your home screen</string>
+    <string name="art_preview">Art preview</string>
+    <string name="btn_new">New</string>
+    <string name="btn_pattern">Pattern</string>
+    <string name="btn_colours">Colours</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_patterns">Patterns</string>
+    <string name="btn_share">Share</string>
+    <string name="saved_label">Saved</string>
+    <string name="saved">Saved</string>
+    <string name="already_saved">Already saved</string>
+    <string name="delete_title">Delete this saved art?</string>
+    <string name="delete">Delete</string>
+    <string name="patterns_title">Patterns</string>
+    <string name="done">Done</string>
+    <string name="share_title">Share</string>
+    <string name="close">Close</string>
+    <string name="current_code_label">Current art code</string>
+    <string name="copy">Copy</string>
+    <string name="copied">Copied to clipboard</string>
+    <string name="import_label">Paste a code to import</string>
+    <string name="import_hint">{&#8220;v&#8221;:1,&#8230;}</string>
+    <string name="btn_import">Import</string>
+    <string name="imported">Imported</string>
+    <string name="invalid_code">That code isn\'t valid</string>
+    <string name="unknown_pattern">Unknown pattern in code</string>
+</resources>

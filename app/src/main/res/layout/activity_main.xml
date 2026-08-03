@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <dev.artwidget.ArtView
+        android:id="@+id/artView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:contentDescription="@string/art_preview" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnNew"
+            style="@style/ActionButton"
+            android:layout_marginEnd="8dp"
+            android:text="@string/btn_new" />
+
+        <Button
+            android:id="@+id/btnPattern"
+            style="@style/ActionButton"
+            android:layout_marginEnd="8dp"
+            android:text="@string/btn_pattern" />
+
+        <Button
+            android:id="@+id/btnColours"
+            style="@style/ActionButton"
+            android:layout_marginEnd="8dp"
+            android:text="@string/btn_colours" />
+
+        <Button
+            android:id="@+id/btnSave"
+            style="@style/ActionButton"
+            android:text="@string/btn_save" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/savedLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/saved_label"
+        android:textColor="@color/text_dim"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/savedRow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnPatterns"
+            style="@style/QuietButton"
+            android:layout_marginEnd="8dp"
+            android:text="@string/btn_patterns" />
+
+        <Button
+            android:id="@+id/btnShare"
+            style="@style/QuietButton"
+            android:text="@string/btn_share" />
+    </LinearLayout>
+</LinearLayout>
