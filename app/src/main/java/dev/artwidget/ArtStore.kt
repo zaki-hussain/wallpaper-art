@@ -30,20 +30,15 @@ class ArtStore(context: Context) {
         get() = prefs.getBoolean(KEY_WALLPAPER, false)
         set(value) = prefs.edit().putBoolean(KEY_WALLPAPER, value).apply()
 
-    /** Percent of screen height, from the bottom, painted solid in wallpaper mode. */
-    var wallpaperSolidPct: Int
-        get() = prefs.getInt(KEY_SOLID, 0)
-        set(value) = prefs.edit().putInt(KEY_SOLID, value.coerceIn(0, 60)).apply()
+    /** Fade the home wallpaper into a solid colour at the bottom (lock screen stays full art). */
+    var fadeEnabled: Boolean
+        get() = prefs.getBoolean(KEY_FADE_ON, false)
+        set(value) = prefs.edit().putBoolean(KEY_FADE_ON, value).apply()
 
-    /** Divide between art and solid area: one of Wallpaper.STYLES. */
-    var divideStyle: String
-        get() = prefs.getString(KEY_DIVIDE, Wallpaper.STYLE_LINE) ?: Wallpaper.STYLE_LINE
-        set(value) = prefs.edit().putString(KEY_DIVIDE, value).apply()
-
-    /** When true, refreshes keep the chosen divide instead of re-rolling it. */
-    var divideFrozen: Boolean
-        get() = prefs.getBoolean(KEY_DIVIDE_FROZEN, false)
-        set(value) = prefs.edit().putBoolean(KEY_DIVIDE_FROZEN, value).apply()
+    /** Percent of screen height, from the bottom, over which the home wallpaper fades. */
+    var fadePct: Int
+        get() = prefs.getInt(KEY_FADE_PCT, 20)
+        set(value) = prefs.edit().putInt(KEY_FADE_PCT, value.coerceIn(0, 60)).apply()
 
     /** When true, refreshes keep the current pattern. */
     var patternLocked: Boolean
@@ -56,13 +51,12 @@ class ArtStore(context: Context) {
         set(value) = prefs.edit().putBoolean(KEY_LOCK_COLORS, value).apply()
 
     /**
-     * The refresh step behind New, the widget tap and the auto-refresh alarm: a new
-     * design except the locked aspects, with the divide re-rolled unless frozen.
+     * The refresh step behind New and the auto-refresh alarm: a new design except the
+     * locked aspects.
      */
     fun refreshArt(dark: Boolean?): ArtSpec {
         val next = Generator.nextArt(currentOrCreate(), enabledPatterns(), dark, patternLocked, colorsLocked)
         current = next
-        if (!divideFrozen) divideStyle = Wallpaper.STYLES.random()
         return next
     }
 
@@ -111,9 +105,8 @@ class ArtStore(context: Context) {
         const val KEY_DISABLED = "disabled"
         const val KEY_INTERVAL = "interval"
         const val KEY_WALLPAPER = "wallpaper"
-        const val KEY_SOLID = "wallpaperSolid"
-        const val KEY_DIVIDE = "divide"
-        const val KEY_DIVIDE_FROZEN = "divideFrozen"
+        const val KEY_FADE_ON = "fadeOn"
+        const val KEY_FADE_PCT = "fadePct"
         const val KEY_LOCK_PATTERN = "lockPattern"
         const val KEY_LOCK_COLORS = "lockColors"
     }
