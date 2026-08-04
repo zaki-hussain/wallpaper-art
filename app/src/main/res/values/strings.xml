@@ -37,8 +37,8 @@
     <string name="wallpaper_title">Wallpaper</string>
     <string name="wallpaper_switch">Set art as wallpaper</string>
     <string name="wallpaper_applied">Wallpaper set</string>
-    <string name="fade_switch">Fade to solid at the bottom (home screen)</string>
-    <string name="fade_pct_label">Fade starts %1$d%% from the bottom</string>
+    <string name="blur_switch">Blur the bottom (home screen)</string>
+    <string name="blur_pct_label">Blur starts %1$d%% from the bottom</string>
     <string name="lock_label">Lock</string>
     <string name="btn_hide">Hide</string>
     <string name="pattern_hidden">Pattern hidden</string>

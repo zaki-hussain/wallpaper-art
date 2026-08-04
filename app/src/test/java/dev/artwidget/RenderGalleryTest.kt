@@ -43,7 +43,7 @@ class RenderGalleryTest {
     }
 
     @Test
-    fun renderFadeGallery() {
+    fun renderBlurGallery() {
         val outDir = File(System.getProperty("artwidget.renders") ?: "build/renders")
         outDir.mkdirs()
         val rng = Rng(5L)
@@ -54,7 +54,7 @@ class RenderGalleryTest {
         )
         for (pct in listOf(15, 35)) {
             val art = ArtRenderer.render(spec, 540, 1200)
-            save(Wallpaper.fade(art, spec.colors[0], pct), File(outDir, "fade_$pct.png"))
+            save(Wallpaper.blurBottom(art, spec.colors[0], pct), File(outDir, "blur_$pct.png"))
         }
     }
 

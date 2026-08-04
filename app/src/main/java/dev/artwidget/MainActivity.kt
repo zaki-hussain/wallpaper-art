@@ -263,19 +263,19 @@ class MainActivity : Activity() {
     private fun showWallpaperDialog() {
         val view = layoutInflater.inflate(R.layout.dialog_wallpaper, null)
         val enable = view.findViewById<Switch>(R.id.switchWallpaper)
-        val fade = view.findViewById<Switch>(R.id.switchFade)
-        val label = view.findViewById<TextView>(R.id.fadeLabel)
-        val seek = view.findViewById<SeekBar>(R.id.fadeSeek)
+        val blur = view.findViewById<Switch>(R.id.switchBlur)
+        val label = view.findViewById<TextView>(R.id.blurLabel)
+        val seek = view.findViewById<SeekBar>(R.id.blurSeek)
 
         enable.isChecked = store.wallpaperEnabled
-        fade.isChecked = store.fadeEnabled
-        seek.progress = store.fadePct
-        seek.isEnabled = fade.isChecked
-        label.text = getString(R.string.fade_pct_label, seek.progress)
-        fade.setOnCheckedChangeListener { _, on -> seek.isEnabled = on }
+        blur.isChecked = store.blurEnabled
+        seek.progress = store.blurPct
+        seek.isEnabled = blur.isChecked
+        label.text = getString(R.string.blur_pct_label, seek.progress)
+        blur.setOnCheckedChangeListener { _, on -> seek.isEnabled = on }
         seek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(sb: SeekBar?, p: Int, fromUser: Boolean) {
-                label.text = getString(R.string.fade_pct_label, p)
+                label.text = getString(R.string.blur_pct_label, p)
             }
             override fun onStartTrackingTouch(sb: SeekBar?) {}
             override fun onStopTrackingTouch(sb: SeekBar?) {}
@@ -286,8 +286,8 @@ class MainActivity : Activity() {
             .setView(view)
             .setPositiveButton(R.string.done) { _, _ ->
                 store.wallpaperEnabled = enable.isChecked
-                store.fadeEnabled = fade.isChecked
-                store.fadePct = seek.progress
+                store.blurEnabled = blur.isChecked
+                store.blurPct = seek.progress
                 if (enable.isChecked) {
                     Wallpaper.applyAsync(this)
                     toast(getString(R.string.wallpaper_applied))

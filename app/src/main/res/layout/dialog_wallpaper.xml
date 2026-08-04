@@ -16,16 +16,16 @@
         android:textSize="15sp" />
 
     <Switch
-        android:id="@+id/switchFade"
+        android:id="@+id/switchBlur"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="@string/fade_switch"
+        android:text="@string/blur_switch"
         android:textColor="@color/text"
         android:textSize="15sp" />
 
     <TextView
-        android:id="@+id/fadeLabel"
+        android:id="@+id/blurLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
@@ -33,7 +33,7 @@
         android:textSize="13sp" />
 
     <SeekBar
-        android:id="@+id/fadeSeek"
+        android:id="@+id/blurSeek"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
