@@ -1,20 +1,23 @@
 package dev.artwidget
 
-import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.widget.RemoteViews
 import dev.artwidget.art.ArtRenderer
+import dev.artwidget.art.Generator
 
 class ArtWidgetProvider : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, manager: AppWidgetManager, ids: IntArray) {
         ids.forEach { update(context, manager, it) }
     }
+
+    override fun onEnabled(context: Context) = RefreshReceiver.schedule(context)
+
+    override fun onDisabled(context: Context) = RefreshReceiver.cancel(context)
 
     override fun onAppWidgetOptionsChanged(
         context: Context,
@@ -32,6 +35,20 @@ class ArtWidgetProvider : AppWidgetProvider() {
         fun updateAllAsync(context: Context) {
             val app = context.applicationContext
             executor.execute { updateAll(app) }
+        }
+
+        /** Stores a freshly generated art and re-renders every placed widget, off-thread. */
+        fun newArtAsync(context: Context, onDone: () -> Unit = {}) {
+            val app = context.applicationContext
+            executor.execute {
+                try {
+                    val store = ArtStore(app)
+                    store.current = Generator.newArt(store.enabledPatterns())
+                    updateAll(app)
+                } finally {
+                    onDone()
+                }
+            }
         }
 
         /** Re-renders every placed widget with the store's current art. */
@@ -75,11 +92,7 @@ class ArtWidgetProvider : AppWidgetProvider() {
                 }
             } else 16f * density
 
-            val tap = PendingIntent.getActivity(
-                context, 0,
-                Intent(context, MainActivity::class.java),
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
+            val tap = RefreshReceiver.newArtIntent(context)
 
             fun viewsFor(wDp: Int, hDp: Int): RemoteViews {
                 var w = ((if (wDp > 0) wDp else 300) * density).toInt().coerceAtLeast(50)

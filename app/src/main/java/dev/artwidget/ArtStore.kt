@@ -19,6 +19,11 @@ class ArtStore(context: Context) {
     fun currentOrCreate(): ArtSpec =
         current ?: Generator.newArt(enabledPatterns()).also { current = it }
 
+    /** Auto-refresh interval in milliseconds; 0 = off. */
+    var refreshIntervalMillis: Long
+        get() = prefs.getLong(KEY_INTERVAL, 0L)
+        set(value) = prefs.edit().putLong(KEY_INTERVAL, value).apply()
+
     fun saved(): List<ArtSpec> {
         val raw = prefs.getString(KEY_SAVED, null) ?: return emptyList()
         return try {
@@ -62,5 +67,6 @@ class ArtStore(context: Context) {
         const val KEY_CURRENT = "current"
         const val KEY_SAVED = "saved"
         const val KEY_DISABLED = "disabled"
+        const val KEY_INTERVAL = "interval"
     }
 }
