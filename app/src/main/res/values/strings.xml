@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Art Wallpaper</string>
+    <string name="app_name">Wallpaper Art</string>
     <string name="art_preview">Art preview</string>
     <string name="btn_new">New</string>
     <string name="btn_pattern">Pattern</string>
