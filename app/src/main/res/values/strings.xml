@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Art Widget</string>
-    <string name="widget_description">Generated art for your home screen</string>
+    <string name="app_name">Art Wallpaper</string>
     <string name="art_preview">Art preview</string>
     <string name="btn_new">New</string>
     <string name="btn_pattern">Pattern</string>
@@ -27,4 +26,25 @@
     <string name="imported">Imported</string>
     <string name="invalid_code">That code isn\'t valid</string>
     <string name="unknown_pattern">Unknown pattern in code</string>
+    <string name="btn_auto">Auto</string>
+    <string name="auto_refresh_title">Auto-refresh widget</string>
+    <string name="interval_off">Off</string>
+    <string name="interval_30m">Every 30 minutes</string>
+    <string name="interval_hourly">Hourly</string>
+    <string name="interval_6h">Every 6 hours</string>
+    <string name="interval_daily">Daily</string>
+    <string name="btn_wallpaper">Wallpaper</string>
+    <string name="wallpaper_title">Wallpaper</string>
+    <string name="wallpaper_switch">Set art as wallpaper</string>
+    <string name="wallpaper_applied">Wallpaper set</string>
+    <string name="blur_switch">Blur the bottom (home screen)</string>
+    <string name="blur_pct_label">Blur starts %1$d%% from the bottom</string>
+    <string name="lock_label">Lock</string>
+    <string name="btn_hide">Hide</string>
+    <string name="pattern_hidden">Pattern hidden</string>
+    <string name="last_pattern">Can\'t hide the last pattern</string>
+    <string name="hidden_title">Hidden patterns</string>
+    <string name="none_hidden">No hidden patterns</string>
+    <string name="btn_hidden">Hidden</string>
+    <string name="restore">Restore</string>
 </resources>

@@ -1,12 +1,12 @@
-# Art Widget
+# Art Wallpaper
 
-Minimal Android home-screen widget that shows procedurally generated art.
+Minimal Android app that generates procedural art and sets it as your wallpaper.
 
-- 23 pattern styles — flow fields, dots, gradient meshes, voronoi, bauhaus grids, contours, scallops, and more. Pick which ones are in rotation.
-- Palettes are generated in OKLCH with colour-harmony strategies, so every combination comes out looking considered — no colour theory needed.
-- Shuffle the pattern and the colours independently; save the ones you like.
-- Deterministic: an artwork is just `pattern + seed + colours`, so it re-renders identically at any size. The widget mirrors the app's current art and re-renders when resized.
-- Share via a small JSON code — copy it out, or paste one into the import box.
+- 38 pattern styles — flow fields, dots, gradient meshes, voronoi, bauhaus grids, arches, isometric cubes, layered hills, and more. Hide any pattern from the current art, and restore hidden ones from a previewed list.
+- Palettes are generated in OKLCH with colour-harmony strategies, so every combination comes out looking considered — no colour theory needed. New art matches the system light/dark theme.
+- Refreshes re-roll pattern and colours; either can be locked. Auto-refresh on a schedule (30 min to daily) via inexact, non-waking alarms — no battery cost.
+- The lock screen gets the full art; the home screen can optionally blur its bottom so dock icons stay legible (slider sets where the blur starts).
+- Deterministic: an artwork is just `pattern + seed + colours`, so it re-renders identically at any size. Share via a small JSON code — copy it out, or paste one into the import box.
 
 ## Build
 
