@@ -39,6 +39,8 @@
     <string name="wallpaper_applied">Wallpaper set</string>
     <string name="blur_switch">Blur the bottom (home screen)</string>
     <string name="blur_pct_label">Blur starts %1$d%% from the bottom</string>
+    <string name="lock_pattern">Lock pattern</string>
+    <string name="lock_colours">Lock colours</string>
     <string name="btn_hide">Hide</string>
     <string name="pattern_hidden">Pattern hidden</string>
     <string name="last_pattern">Can\'t hide the last pattern</string>
