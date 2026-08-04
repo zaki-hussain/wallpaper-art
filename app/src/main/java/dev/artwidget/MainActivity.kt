@@ -1,6 +1,7 @@
 package dev.artwidget
 
 import android.app.Activity
+import android.app.AlarmManager
 import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -38,8 +39,6 @@ class MainActivity : Activity() {
         savedLabel = findViewById(R.id.savedLabel)
         roundOutline(artView, 24f)
 
-        artView.spec = store.currentOrCreate()
-
         findViewById<Button>(R.id.btnNew).setOnClickListener {
             setCurrent(Generator.newArt(store.enabledPatterns()))
         }
@@ -59,8 +58,16 @@ class MainActivity : Activity() {
         }
         findViewById<Button>(R.id.btnPatterns).setOnClickListener { showPatternsDialog() }
         findViewById<Button>(R.id.btnShare).setOnClickListener { showShareDialog() }
+        findViewById<Button>(R.id.btnAuto).setOnClickListener { showAutoRefreshDialog() }
 
         refreshSaved()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // The widget tap and the auto-refresh alarm change the current art behind our back.
+        val spec = store.currentOrCreate()
+        if (artView.spec != spec) artView.spec = spec
     }
 
     override fun onDestroy() {
@@ -124,6 +131,26 @@ class MainActivity : Activity() {
                 store.setDisabledIds(
                     patterns.filterIndexed { i, _ -> !checked[i] }.map { it.id }.toSet()
                 )
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun showAutoRefreshDialog() {
+        val options = listOf(
+            0L to getString(R.string.interval_off),
+            AlarmManager.INTERVAL_HALF_HOUR to getString(R.string.interval_30m),
+            AlarmManager.INTERVAL_HOUR to getString(R.string.interval_hourly),
+            AlarmManager.INTERVAL_HOUR * 6 to getString(R.string.interval_6h),
+            AlarmManager.INTERVAL_DAY to getString(R.string.interval_daily)
+        )
+        val checked = options.indexOfFirst { it.first == store.refreshIntervalMillis }
+        AlertDialog.Builder(this)
+            .setTitle(R.string.auto_refresh_title)
+            .setSingleChoiceItems(options.map { it.second }.toTypedArray(), checked) { d, i ->
+                store.refreshIntervalMillis = options[i].first
+                RefreshReceiver.schedule(this)
+                d.dismiss()
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()

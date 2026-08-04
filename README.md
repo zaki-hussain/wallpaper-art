@@ -6,6 +6,7 @@ Minimal Android home-screen widget that shows procedurally generated art.
 - Palettes are generated in OKLCH with colour-harmony strategies, so every combination comes out looking considered — no colour theory needed.
 - Shuffle the pattern and the colours independently; save the ones you like.
 - Deterministic: an artwork is just `pattern + seed + colours`, so it re-renders identically at any size. The widget mirrors the app's current art and re-renders when resized.
+- Tap the widget for a new design. Optionally auto-refresh on a schedule (30 min to daily) via the app's Auto button — inexact, non-waking alarms, so no battery cost.
 - Share via a small JSON code — copy it out, or paste one into the import box.
 
 ## Build

@@ -27,4 +27,11 @@
     <string name="imported">Imported</string>
     <string name="invalid_code">That code isn\'t valid</string>
     <string name="unknown_pattern">Unknown pattern in code</string>
+    <string name="btn_auto">Auto</string>
+    <string name="auto_refresh_title">Auto-refresh widget</string>
+    <string name="interval_off">Off</string>
+    <string name="interval_30m">Every 30 minutes</string>
+    <string name="interval_hourly">Hourly</string>
+    <string name="interval_6h">Every 6 hours</string>
+    <string name="interval_daily">Daily</string>
 </resources>
