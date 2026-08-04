@@ -2,10 +2,13 @@ package dev.artwidget
 
 import android.app.AlarmManager
 import android.app.WallpaperManager
+import android.graphics.Bitmap
+import android.graphics.Color
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -45,6 +48,19 @@ class RefreshTest {
         store.wallpaperEnabled = true
         Wallpaper.applyIfEnabled(context)
         assertNotNull(shadow.getBitmap(WallpaperManager.FLAG_SYSTEM))
+    }
+
+    @Test
+    fun composePaintsSolidBottomForEveryDivide() {
+        for (style in Wallpaper.STYLES) {
+            val art = Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888)
+            art.eraseColor(Color.RED)
+            val out = Wallpaper.compose(art, Color.GREEN, 30, style)
+            assertEquals("style $style solid", Color.GREEN, out.getPixel(50, 195))
+            assertEquals("style $style art", Color.RED, out.getPixel(50, 5))
+        }
+        val untouched = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888)
+        assertSame(untouched, Wallpaper.compose(untouched, Color.GREEN, 0, Wallpaper.STYLE_LINE))
     }
 
     @Test

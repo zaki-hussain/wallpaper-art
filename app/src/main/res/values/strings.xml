@@ -36,7 +36,13 @@
     <string name="interval_daily">Daily</string>
     <string name="btn_wallpaper">Wallpaper</string>
     <string name="wallpaper_title">Wallpaper</string>
-    <string name="wallpaper_widget_only">Widget only</string>
-    <string name="wallpaper_also">Widget + wallpaper</string>
+    <string name="wallpaper_switch">Set art as wallpaper</string>
     <string name="wallpaper_applied">Wallpaper set</string>
+    <string name="wallpaper_solid_label">Solid area from bottom: %1$d%%</string>
+    <string name="divide_label">Divide style</string>
+    <string name="divide_random">Random</string>
+    <string name="divide_line">Line</string>
+    <string name="divide_arc">Arc</string>
+    <string name="divide_fade">Fade</string>
+    <string name="lock_label">Lock</string>
 </resources>
