@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "art-widget"
+rootProject.name = "wallpaper-art"
 include(":app")
