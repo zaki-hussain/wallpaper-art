@@ -10,26 +10,29 @@ object PaletteGen {
 
     private const val MIN_CONTRAST = 0.16 // minimum |ΔL| in OKLab between bg and any fg
 
-    fun generate(n: Int, rng: Rng): List<Int> {
+    /**
+     * [dark] forces the background family (true = dark bg, false = light bg) so new art
+     * can match the system theme; null keeps each strategy's own light/dark odds.
+     */
+    fun generate(n: Int, rng: Rng, dark: Boolean? = null): List<Int> {
         require(n >= 1)
         val strategy = rng.int(8)
         val palette = when (strategy) {
-            0 -> tonal(n, rng)
-            1 -> analogous(n, rng)
-            2 -> complement(n, rng)
-            3 -> pastel(n, rng)
-            4 -> earthy(n, rng)
-            5 -> neutralPop(n, rng)
-            6 -> darkLuminous(n, rng)
-            else -> duotone(n, rng)
+            0 -> tonal(n, rng, dark ?: rng.chance(0.4))
+            1 -> analogous(n, rng, dark ?: rng.chance(0.35))
+            2 -> complement(n, rng, dark ?: rng.chance(0.3))
+            3 -> pastel(n, rng, dark ?: false)
+            4 -> earthy(n, rng, dark ?: rng.chance(0.3))
+            5 -> neutralPop(n, rng, dark ?: rng.chance(0.45))
+            6 -> darkLuminous(n, rng, dark ?: true)
+            else -> duotone(n, rng, dark ?: rng.chance(0.35))
         }
         return enforceContrast(palette)
     }
 
     /** One hue, varied lightness. Works at any colour count. */
-    private fun tonal(n: Int, rng: Rng): List<Lch> {
+    private fun tonal(n: Int, rng: Rng, dark: Boolean): List<Lch> {
         val h = rng.range(0.0, 360.0)
-        val dark = rng.chance(0.4)
         val bg = if (dark) Lch(rng.range(0.18, 0.24), rng.range(0.01, 0.04), h)
         else Lch(rng.range(0.93, 0.97), rng.range(0.008, 0.03), h)
         val fgs = (1 until n).map { i ->
@@ -41,10 +44,9 @@ object PaletteGen {
     }
 
     /** Neighbouring hues, soft and cohesive. */
-    private fun analogous(n: Int, rng: Rng): List<Lch> {
+    private fun analogous(n: Int, rng: Rng, dark: Boolean): List<Lch> {
         val base = rng.range(0.0, 360.0)
         val spread = rng.range(28.0, 55.0)
-        val dark = rng.chance(0.35)
         val bg = if (dark) Lch(rng.range(0.17, 0.23), rng.range(0.015, 0.045), base)
         else Lch(rng.range(0.93, 0.97), rng.range(0.01, 0.035), base)
         val fgs = (1 until n).map { i ->
@@ -56,9 +58,8 @@ object PaletteGen {
     }
 
     /** Mostly one hue family with an opposite-hue accent in the last slot. */
-    private fun complement(n: Int, rng: Rng): List<Lch> {
+    private fun complement(n: Int, rng: Rng, dark: Boolean): List<Lch> {
         val base = rng.range(0.0, 360.0)
-        val dark = rng.chance(0.3)
         val bg = if (dark) Lch(rng.range(0.17, 0.23), rng.range(0.01, 0.04), base)
         else Lch(rng.range(0.93, 0.97), rng.range(0.008, 0.03), base)
         val fgs = (1 until n).map { i ->
@@ -71,21 +72,22 @@ object PaletteGen {
         return listOf(bg) + fgs
     }
 
-    /** Light, airy, multi-hue softness. */
-    private fun pastel(n: Int, rng: Rng): List<Lch> {
+    /** Multi-hue softness: airy on light backgrounds, muted glow on dark ones. */
+    private fun pastel(n: Int, rng: Rng, dark: Boolean): List<Lch> {
         val base = rng.range(0.0, 360.0)
         val step = rng.range(45.0, 110.0)
-        val bg = Lch(rng.range(0.95, 0.975), rng.range(0.005, 0.02), base)
+        val bg = if (dark) Lch(rng.range(0.17, 0.22), rng.range(0.01, 0.03), base)
+        else Lch(rng.range(0.95, 0.975), rng.range(0.005, 0.02), base)
         val fgs = (1 until n).map { i ->
-            Lch(rng.range(0.78, 0.87), rng.range(0.05, 0.1), base + step * i + rng.range(-12.0, 12.0))
+            val l = if (dark) rng.range(0.68, 0.8) else rng.range(0.78, 0.87)
+            Lch(l, rng.range(0.05, 0.1), base + step * i + rng.range(-12.0, 12.0))
         }
         return listOf(bg) + fgs
     }
 
     /** Muted, warm, natural tones. */
-    private fun earthy(n: Int, rng: Rng): List<Lch> {
+    private fun earthy(n: Int, rng: Rng, darkBg: Boolean): List<Lch> {
         val hues = listOf(30.0, 55.0, 80.0, 110.0, 150.0, 250.0)
-        val darkBg = rng.chance(0.3)
         val bg = if (darkBg) Lch(rng.range(0.22, 0.28), rng.range(0.015, 0.04), rng.range(40.0, 90.0))
         else Lch(rng.range(0.92, 0.96), rng.range(0.01, 0.03), rng.range(60.0, 100.0))
         val picked = rng.shuffled(hues)
@@ -97,9 +99,8 @@ object PaletteGen {
     }
 
     /** Neutral greys plus one vivid accent. */
-    private fun neutralPop(n: Int, rng: Rng): List<Lch> {
+    private fun neutralPop(n: Int, rng: Rng, dark: Boolean): List<Lch> {
         val accentH = rng.range(0.0, 360.0)
-        val dark = rng.chance(0.45)
         val bg = if (dark) Lch(rng.range(0.16, 0.22), rng.range(0.0, 0.012), accentH)
         else Lch(rng.range(0.94, 0.97), rng.range(0.0, 0.01), accentH)
         val fgs = (1 until n).map { i ->
@@ -112,22 +113,23 @@ object PaletteGen {
         return listOf(bg) + fgs
     }
 
-    /** Near-black background with glowing colours. */
-    private fun darkLuminous(n: Int, rng: Rng): List<Lch> {
+    /** Glowing colours: on a near-black background, or a near-white one when forced light. */
+    private fun darkLuminous(n: Int, rng: Rng, dark: Boolean): List<Lch> {
         val base = rng.range(0.0, 360.0)
-        val bg = Lch(rng.range(0.13, 0.19), rng.range(0.01, 0.04), base)
+        val bg = if (dark) Lch(rng.range(0.13, 0.19), rng.range(0.01, 0.04), base)
+        else Lch(rng.range(0.94, 0.97), rng.range(0.005, 0.02), base)
         val spread = rng.range(30.0, 90.0)
         val fgs = (1 until n).map { i ->
-            Lch(rng.range(0.62, 0.85), rng.range(0.09, 0.18), base + spread * (i - 1) / (n - 1).coerceAtLeast(1) + rng.range(-10.0, 10.0))
+            val l = if (dark) rng.range(0.62, 0.85) else rng.range(0.5, 0.72)
+            Lch(l, rng.range(0.09, 0.18), base + spread * (i - 1) / (n - 1).coerceAtLeast(1) + rng.range(-10.0, 10.0))
         }
         return listOf(bg) + fgs
     }
 
     /** Two hue families, tints alternating between them. */
-    private fun duotone(n: Int, rng: Rng): List<Lch> {
+    private fun duotone(n: Int, rng: Rng, dark: Boolean): List<Lch> {
         val h1 = rng.range(0.0, 360.0)
         val h2 = h1 + rng.range(70.0, 180.0) * rng.sign()
-        val dark = rng.chance(0.35)
         val bg = if (dark) Lch(rng.range(0.17, 0.23), rng.range(0.02, 0.05), h1)
         else Lch(rng.range(0.93, 0.97), rng.range(0.01, 0.035), h1)
         val fgs = (1 until n).map { i ->
