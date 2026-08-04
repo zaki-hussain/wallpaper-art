@@ -9,21 +9,22 @@ import android.graphics.Outline
 import android.os.Bundle
 import android.view.View
 import android.view.ViewOutlineProvider
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.SeekBar
-import android.widget.Spinner
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import dev.artwidget.art.ArtRenderer
 import dev.artwidget.art.ArtSpec
 import dev.artwidget.art.Generator
+import dev.artwidget.art.PaletteGen
 import dev.artwidget.art.Patterns
+import dev.artwidget.art.Rng
 import java.util.concurrent.Executors
 
 class MainActivity : Activity() {
@@ -65,6 +66,7 @@ class MainActivity : Activity() {
         findViewById<Button>(R.id.btnShare).setOnClickListener { showShareDialog() }
         findViewById<Button>(R.id.btnAuto).setOnClickListener { showAutoRefreshDialog() }
         findViewById<Button>(R.id.btnWallpaper).setOnClickListener { showWallpaperDialog() }
+        findViewById<Button>(R.id.btnHide).setOnClickListener { hideCurrentPattern() }
 
         findViewById<CheckBox>(R.id.lockPattern).apply {
             isChecked = store.patternLocked
@@ -80,7 +82,7 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        // The widget tap and the auto-refresh alarm change the current art behind our back.
+        // The auto-refresh alarm changes the current art behind our back.
         val spec = store.currentOrCreate()
         if (artView.spec != spec) artView.spec = spec
     }
@@ -95,7 +97,7 @@ class MainActivity : Activity() {
     private fun setCurrent(spec: ArtSpec) {
         store.current = spec
         artView.spec = spec
-        ArtWidgetProvider.pushAsync(this)
+        Wallpaper.applyAsync(this)
     }
 
     private fun refreshSaved() {
@@ -147,8 +149,95 @@ class MainActivity : Activity() {
                     patterns.filterIndexed { i, _ -> !checked[i] }.map { it.id }.toSet()
                 )
             }
+            .setNeutralButton(R.string.btn_hidden) { _, _ -> showHiddenDialog() }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
+    }
+
+    /** Bans the current art's pattern from future refreshes and moves to another one. */
+    private fun hideCurrentPattern() {
+        val cur = current()
+        val remaining = store.enabledPatterns().filter { it.id != cur.pattern }
+        if (remaining.isEmpty()) {
+            toast(getString(R.string.last_pattern))
+            return
+        }
+        store.setDisabledIds(store.disabledIds() + cur.pattern)
+        setCurrent(Generator.switchPattern(cur, remaining))
+        toast(getString(R.string.pattern_hidden))
+    }
+
+    /** Hidden patterns with rendered previews, each restorable with a tap. */
+    private fun showHiddenDialog() {
+        val hidden = Patterns.all.filter { it.id in store.disabledIds() }
+        if (hidden.isEmpty()) {
+            toast(getString(R.string.none_hidden))
+            return
+        }
+        val density = resources.displayMetrics.density
+        val pad = (20 * density).toInt()
+        val list = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(pad, pad / 2, pad, pad / 2)
+        }
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.hidden_title)
+            .setView(ScrollView(this).apply { addView(list) })
+            .setNegativeButton(R.string.close, null)
+            .create()
+
+        val size = (64 * density).toInt()
+        hidden.forEach { pattern ->
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                setPadding(0, pad / 3, 0, pad / 3)
+            }
+            val thumb = ImageView(this).apply {
+                layoutParams = LinearLayout.LayoutParams(size, size)
+                scaleType = ImageView.ScaleType.FIT_XY
+            }
+            roundOutline(thumb, 12f)
+            thumbExecutor.execute {
+                val rng = Rng(pattern.id.hashCode().toLong())
+                val sample = ArtSpec(
+                    pattern.id, rng.nextLong(),
+                    PaletteGen.generate(pattern.colorRange.last, rng)
+                )
+                val bmp = ArtRenderer.render(sample, 192, 192)
+                thumb.post { thumb.setImageBitmap(bmp) }
+            }
+            val name = TextView(this).apply {
+                text = pattern.label
+                textSize = 15f
+                setTextColor(getColor(R.color.text))
+                layoutParams = LinearLayout.LayoutParams(
+                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+                ).apply { marginStart = (12 * density).toInt() }
+            }
+            val restore = Button(this).apply {
+                text = getString(R.string.restore)
+                textSize = 13f
+                isAllCaps = false
+                setTextColor(getColor(R.color.text_dim))
+                background = getDrawable(R.drawable.btn_quiet_bg)
+                stateListAnimator = null
+                setPadding((16 * density).toInt(), 0, (16 * density).toInt(), 0)
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, (36 * density).toInt()
+                )
+                setOnClickListener {
+                    store.setDisabledIds(store.disabledIds() - pattern.id)
+                    list.removeView(row)
+                    if (list.childCount == 0) dialog.dismiss()
+                }
+            }
+            row.addView(thumb)
+            row.addView(name)
+            row.addView(restore)
+            list.addView(row)
+        }
+        dialog.show()
     }
 
     private fun showAutoRefreshDialog() {
@@ -174,43 +263,33 @@ class MainActivity : Activity() {
     private fun showWallpaperDialog() {
         val view = layoutInflater.inflate(R.layout.dialog_wallpaper, null)
         val enable = view.findViewById<Switch>(R.id.switchWallpaper)
-        val label = view.findViewById<TextView>(R.id.solidLabel)
-        val seek = view.findViewById<SeekBar>(R.id.solidSeek)
-        val divide = view.findViewById<Spinner>(R.id.divideSpinner)
+        val fade = view.findViewById<Switch>(R.id.switchFade)
+        val label = view.findViewById<TextView>(R.id.fadeLabel)
+        val seek = view.findViewById<SeekBar>(R.id.fadeSeek)
 
         enable.isChecked = store.wallpaperEnabled
-        seek.progress = store.wallpaperSolidPct
-        label.text = getString(R.string.wallpaper_solid_label, seek.progress)
+        fade.isChecked = store.fadeEnabled
+        seek.progress = store.fadePct
+        seek.isEnabled = fade.isChecked
+        label.text = getString(R.string.fade_pct_label, seek.progress)
+        fade.setOnCheckedChangeListener { _, on -> seek.isEnabled = on }
         seek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(sb: SeekBar?, p: Int, fromUser: Boolean) {
-                label.text = getString(R.string.wallpaper_solid_label, p)
+                label.text = getString(R.string.fade_pct_label, p)
             }
             override fun onStartTrackingTouch(sb: SeekBar?) {}
             override fun onStopTrackingTouch(sb: SeekBar?) {}
         })
-        divide.adapter = ArrayAdapter.createFromResource(
-            this, R.array.divide_options, android.R.layout.simple_spinner_item
-        ).also { it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
-        divide.setSelection(
-            if (!store.divideFrozen) 0
-            else Wallpaper.STYLES.indexOf(store.divideStyle).coerceAtLeast(0) + 1
-        )
 
         AlertDialog.Builder(this)
             .setTitle(R.string.wallpaper_title)
             .setView(view)
             .setPositiveButton(R.string.done) { _, _ ->
                 store.wallpaperEnabled = enable.isChecked
-                store.wallpaperSolidPct = seek.progress
-                val pick = divide.selectedItemPosition
-                if (pick in 1..Wallpaper.STYLES.size) {
-                    store.divideFrozen = true
-                    store.divideStyle = Wallpaper.STYLES[pick - 1]
-                } else {
-                    store.divideFrozen = false
-                }
+                store.fadeEnabled = fade.isChecked
+                store.fadePct = seek.progress
                 if (enable.isChecked) {
-                    ArtWidgetProvider.pushAsync(this)
+                    Wallpaper.applyAsync(this)
                     toast(getString(R.string.wallpaper_applied))
                 }
             }

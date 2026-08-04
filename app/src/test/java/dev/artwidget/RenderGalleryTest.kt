@@ -43,7 +43,7 @@ class RenderGalleryTest {
     }
 
     @Test
-    fun renderDivideGallery() {
+    fun renderFadeGallery() {
         val outDir = File(System.getProperty("artwidget.renders") ?: "build/renders")
         outDir.mkdirs()
         val rng = Rng(5L)
@@ -52,9 +52,9 @@ class RenderGalleryTest {
             rng.nextLong(),
             PaletteGen.generate(5, rng, dark = false)
         )
-        for (style in Wallpaper.STYLES) {
+        for (pct in listOf(15, 35)) {
             val art = ArtRenderer.render(spec, 540, 1200)
-            save(Wallpaper.compose(art, spec.colors[0], 30, style, spec.seed), File(outDir, "divide_$style.png"))
+            save(Wallpaper.fade(art, spec.colors[0], pct), File(outDir, "fade_$pct.png"))
         }
     }
 

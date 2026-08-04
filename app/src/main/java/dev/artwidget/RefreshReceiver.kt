@@ -8,8 +8,8 @@ import android.content.Intent
 import android.os.SystemClock
 
 /**
- * Non-exported receiver behind the widget tap and the auto-refresh alarm; both swap
- * in a freshly generated art. Also re-arms the alarm after reboots and app updates.
+ * Non-exported receiver behind the auto-refresh alarm: swaps in a freshly generated
+ * art and re-applies the wallpaper. Also re-arms the alarm after reboots and updates.
  */
 class RefreshReceiver : BroadcastReceiver() {
 
@@ -17,7 +17,7 @@ class RefreshReceiver : BroadcastReceiver() {
         when (intent.action) {
             ACTION_NEW_ART -> {
                 val result = goAsync()
-                ArtWidgetProvider.newArtAsync(context) { result.finish() }
+                Wallpaper.newArtAsync(context) { result.finish() }
             }
             Intent.ACTION_BOOT_COMPLETED,
             Intent.ACTION_MY_PACKAGE_REPLACED -> schedule(context)

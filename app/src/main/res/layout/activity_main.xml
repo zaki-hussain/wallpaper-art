@@ -73,6 +73,24 @@
             android:text="@string/btn_colours"
             android:textColor="@color/text_dim"
             android:textSize="13sp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btnHide"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:background="@drawable/btn_quiet_bg"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:stateListAnimator="@null"
+            android:text="@string/btn_hide"
+            android:textAllCaps="false"
+            android:textColor="@color/text_dim"
+            android:textSize="13sp" />
     </LinearLayout>
 
     <TextView

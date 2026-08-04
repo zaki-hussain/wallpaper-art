@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Art Widget</string>
-    <string name="widget_description">Generated art for your home screen</string>
+    <string name="app_name">Art Wallpaper</string>
     <string name="art_preview">Art preview</string>
     <string name="btn_new">New</string>
     <string name="btn_pattern">Pattern</string>
@@ -38,29 +37,14 @@
     <string name="wallpaper_title">Wallpaper</string>
     <string name="wallpaper_switch">Set art as wallpaper</string>
     <string name="wallpaper_applied">Wallpaper set</string>
-    <string name="wallpaper_solid_label">Solid area from bottom: %1$d%%</string>
-    <string name="divide_label">Divide style</string>
-    <string name="divide_random">Random</string>
-    <string name="divide_line">Line</string>
-    <string name="divide_arc">Arc</string>
-    <string name="divide_fade">Fade</string>
-    <string name="divide_wave">Wave</string>
-    <string name="divide_scallop">Scallop</string>
-    <string name="divide_zigzag">Zigzag</string>
-    <string name="divide_diagonal">Diagonal</string>
-    <string name="divide_mountains">Mountains</string>
+    <string name="fade_switch">Fade to solid at the bottom (home screen)</string>
+    <string name="fade_pct_label">Fade starts %1$d%% from the bottom</string>
     <string name="lock_label">Lock</string>
-
-    <!-- Order must match Wallpaper.STYLES, with Random first. -->
-    <string-array name="divide_options">
-        <item>@string/divide_random</item>
-        <item>@string/divide_line</item>
-        <item>@string/divide_arc</item>
-        <item>@string/divide_fade</item>
-        <item>@string/divide_wave</item>
-        <item>@string/divide_scallop</item>
-        <item>@string/divide_zigzag</item>
-        <item>@string/divide_diagonal</item>
-        <item>@string/divide_mountains</item>
-    </string-array>
+    <string name="btn_hide">Hide</string>
+    <string name="pattern_hidden">Pattern hidden</string>
+    <string name="last_pattern">Can\'t hide the last pattern</string>
+    <string name="hidden_title">Hidden patterns</string>
+    <string name="none_hidden">No hidden patterns</string>
+    <string name="btn_hidden">Hidden</string>
+    <string name="restore">Restore</string>
 </resources>

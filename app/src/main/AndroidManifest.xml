@@ -21,17 +21,6 @@
         </activity>
 
         <receiver
-            android:name=".ArtWidgetProvider"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/art_widget_info" />
-        </receiver>
-
-        <receiver
             android:name=".RefreshReceiver"
             android:exported="false">
             <intent-filter>

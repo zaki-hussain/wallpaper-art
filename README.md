@@ -1,15 +1,12 @@
-# Art Widget
+# Art Wallpaper
 
-Minimal Android home-screen widget that shows procedurally generated art.
+Minimal Android app that generates procedural art and sets it as your wallpaper.
 
-- 23 pattern styles — flow fields, dots, gradient meshes, voronoi, bauhaus grids, contours, scallops, and more. Pick which ones are in rotation.
+- 38 pattern styles — flow fields, dots, gradient meshes, voronoi, bauhaus grids, arches, isometric cubes, layered hills, and more. Hide any pattern from the current art, and restore hidden ones from a previewed list.
 - Palettes are generated in OKLCH with colour-harmony strategies, so every combination comes out looking considered — no colour theory needed. New art matches the system light/dark theme.
-- Shuffle the pattern and the colours independently; save the ones you like.
-- Deterministic: an artwork is just `pattern + seed + colours`, so it re-renders identically at any size. The widget mirrors the app's current art and re-renders when resized.
-- Tap the widget for a new design. Optionally auto-refresh on a schedule (30 min to daily) via the app's Auto button — inexact, non-waking alarms, so no battery cost.
-- Optionally apply the art as your wallpaper (home + lock) via the Wallpaper button; taps and auto-refresh keep it in sync, and it works with or without the widget. A slider keeps the bottom of the screen a solid colour so icons stay legible, joined by a divide — line, arc, fade, wave, scallop, zigzag, diagonal or mountains.
-- Refreshes re-roll pattern, colours and divide style; each can be locked to keep it fixed.
-- Share via a small JSON code — copy it out, or paste one into the import box.
+- Refreshes re-roll pattern and colours; either can be locked. Auto-refresh on a schedule (30 min to daily) via inexact, non-waking alarms — no battery cost.
+- The lock screen gets the full art; the home screen can optionally fade to a solid colour at the bottom so dock icons stay legible (slider sets where the fade starts).
+- Deterministic: an artwork is just `pattern + seed + colours`, so it re-renders identically at any size. Share via a small JSON code — copy it out, or paste one into the import box.
 
 ## Build
 
