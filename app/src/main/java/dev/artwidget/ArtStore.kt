@@ -30,6 +30,42 @@ class ArtStore(context: Context) {
         get() = prefs.getBoolean(KEY_WALLPAPER, false)
         set(value) = prefs.edit().putBoolean(KEY_WALLPAPER, value).apply()
 
+    /** Percent of screen height, from the bottom, painted solid in wallpaper mode. */
+    var wallpaperSolidPct: Int
+        get() = prefs.getInt(KEY_SOLID, 0)
+        set(value) = prefs.edit().putInt(KEY_SOLID, value.coerceIn(0, 60)).apply()
+
+    /** Divide between art and solid area: one of Wallpaper.STYLES. */
+    var divideStyle: String
+        get() = prefs.getString(KEY_DIVIDE, Wallpaper.STYLE_LINE) ?: Wallpaper.STYLE_LINE
+        set(value) = prefs.edit().putString(KEY_DIVIDE, value).apply()
+
+    /** When true, refreshes keep the chosen divide instead of re-rolling it. */
+    var divideFrozen: Boolean
+        get() = prefs.getBoolean(KEY_DIVIDE_FROZEN, false)
+        set(value) = prefs.edit().putBoolean(KEY_DIVIDE_FROZEN, value).apply()
+
+    /** When true, refreshes keep the current pattern. */
+    var patternLocked: Boolean
+        get() = prefs.getBoolean(KEY_LOCK_PATTERN, false)
+        set(value) = prefs.edit().putBoolean(KEY_LOCK_PATTERN, value).apply()
+
+    /** When true, refreshes keep the current colours. */
+    var colorsLocked: Boolean
+        get() = prefs.getBoolean(KEY_LOCK_COLORS, false)
+        set(value) = prefs.edit().putBoolean(KEY_LOCK_COLORS, value).apply()
+
+    /**
+     * The refresh step behind New, the widget tap and the auto-refresh alarm: a new
+     * design except the locked aspects, with the divide re-rolled unless frozen.
+     */
+    fun refreshArt(dark: Boolean?): ArtSpec {
+        val next = Generator.nextArt(currentOrCreate(), enabledPatterns(), dark, patternLocked, colorsLocked)
+        current = next
+        if (!divideFrozen) divideStyle = Wallpaper.STYLES.random()
+        return next
+    }
+
     fun saved(): List<ArtSpec> {
         val raw = prefs.getString(KEY_SAVED, null) ?: return emptyList()
         return try {
@@ -75,6 +111,11 @@ class ArtStore(context: Context) {
         const val KEY_DISABLED = "disabled"
         const val KEY_INTERVAL = "interval"
         const val KEY_WALLPAPER = "wallpaper"
+        const val KEY_SOLID = "wallpaperSolid"
+        const val KEY_DIVIDE = "divide"
+        const val KEY_DIVIDE_FROZEN = "divideFrozen"
+        const val KEY_LOCK_PATTERN = "lockPattern"
+        const val KEY_LOCK_COLORS = "lockColors"
     }
 }
 

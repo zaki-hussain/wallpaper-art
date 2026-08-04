@@ -2,6 +2,7 @@ package dev.artwidget
 
 import dev.artwidget.art.ArtRenderer
 import dev.artwidget.art.ArtSpec
+import dev.artwidget.art.Generator
 import dev.artwidget.art.Oklab
 import dev.artwidget.art.PaletteGen
 import dev.artwidget.art.Patterns
@@ -128,6 +129,24 @@ class EngineTest {
             assertTrue("seed $seed: dark bg L=$darkBg", darkBg < 0.45)
             assertTrue("seed $seed: light bg L=$lightBg", lightBg > 0.85)
         }
+    }
+
+    @Test
+    fun nextArtRespectsLocks() {
+        val current = ArtSpec(Patterns.all[0].id, 42L, PaletteGen.generate(4, Rng(3L)))
+
+        val both = Generator.nextArt(current, Patterns.all, null, keepPattern = true, keepColors = true)
+        assertEquals(current.pattern, both.pattern)
+        assertEquals(current.colors, both.colors)
+        assertTrue(both.seed != current.seed)
+
+        val keptPattern = Generator.nextArt(current, Patterns.all, null, keepPattern = true)
+        assertEquals(current.pattern, keptPattern.pattern)
+
+        val keptColors = Generator.nextArt(current, Patterns.all, null, keepColors = true)
+        assertTrue(keptColors.pattern != current.pattern)
+        val shared = minOf(keptColors.colors.size, current.colors.size)
+        assertEquals(current.colors.take(shared), keptColors.colors.take(shared))
     }
 
     @Test

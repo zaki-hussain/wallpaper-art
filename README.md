@@ -7,7 +7,8 @@ Minimal Android home-screen widget that shows procedurally generated art.
 - Shuffle the pattern and the colours independently; save the ones you like.
 - Deterministic: an artwork is just `pattern + seed + colours`, so it re-renders identically at any size. The widget mirrors the app's current art and re-renders when resized.
 - Tap the widget for a new design. Optionally auto-refresh on a schedule (30 min to daily) via the app's Auto button — inexact, non-waking alarms, so no battery cost.
-- Optionally apply the art as your wallpaper (home + lock) via the Wallpaper button; taps and auto-refresh keep it in sync, and it works with or without the widget.
+- Optionally apply the art as your wallpaper (home + lock) via the Wallpaper button; taps and auto-refresh keep it in sync, and it works with or without the widget. A slider keeps the bottom of the screen a solid colour so icons stay legible, joined by a line, arc or fade divide.
+- Refreshes re-roll pattern, colours and divide style; each can be locked to keep it fixed.
 - Share via a small JSON code — copy it out, or paste one into the import box.
 
 ## Build

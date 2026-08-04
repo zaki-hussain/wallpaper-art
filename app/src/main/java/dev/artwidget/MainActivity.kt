@@ -10,9 +10,13 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewOutlineProvider
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RadioGroup
+import android.widget.SeekBar
+import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import dev.artwidget.art.ArtRenderer
@@ -40,7 +44,7 @@ class MainActivity : Activity() {
         roundOutline(artView, 24f)
 
         findViewById<Button>(R.id.btnNew).setOnClickListener {
-            setCurrent(Generator.newArt(store.enabledPatterns(), isSystemDark()))
+            setCurrent(store.refreshArt(isSystemDark()))
         }
         findViewById<Button>(R.id.btnPattern).setOnClickListener {
             setCurrent(Generator.switchPattern(current(), store.enabledPatterns()))
@@ -60,6 +64,15 @@ class MainActivity : Activity() {
         findViewById<Button>(R.id.btnShare).setOnClickListener { showShareDialog() }
         findViewById<Button>(R.id.btnAuto).setOnClickListener { showAutoRefreshDialog() }
         findViewById<Button>(R.id.btnWallpaper).setOnClickListener { showWallpaperDialog() }
+
+        findViewById<CheckBox>(R.id.lockPattern).apply {
+            isChecked = store.patternLocked
+            setOnCheckedChangeListener { _, b -> store.patternLocked = b }
+        }
+        findViewById<CheckBox>(R.id.lockColours).apply {
+            isChecked = store.colorsLocked
+            setOnCheckedChangeListener { _, b -> store.colorsLocked = b }
+        }
 
         refreshSaved()
     }
@@ -158,20 +171,47 @@ class MainActivity : Activity() {
     }
 
     private fun showWallpaperDialog() {
-        val labels = arrayOf(
-            getString(R.string.wallpaper_widget_only),
-            getString(R.string.wallpaper_also)
+        val view = layoutInflater.inflate(R.layout.dialog_wallpaper, null)
+        val enable = view.findViewById<Switch>(R.id.switchWallpaper)
+        val label = view.findViewById<TextView>(R.id.solidLabel)
+        val seek = view.findViewById<SeekBar>(R.id.solidSeek)
+        val divide = view.findViewById<RadioGroup>(R.id.divideGroup)
+
+        enable.isChecked = store.wallpaperEnabled
+        seek.progress = store.wallpaperSolidPct
+        label.text = getString(R.string.wallpaper_solid_label, seek.progress)
+        seek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(sb: SeekBar?, p: Int, fromUser: Boolean) {
+                label.text = getString(R.string.wallpaper_solid_label, p)
+            }
+            override fun onStartTrackingTouch(sb: SeekBar?) {}
+            override fun onStopTrackingTouch(sb: SeekBar?) {}
+        })
+        divide.check(
+            if (!store.divideFrozen) R.id.divideRandom
+            else when (store.divideStyle) {
+                Wallpaper.STYLE_ARC -> R.id.divideArc
+                Wallpaper.STYLE_FADE -> R.id.divideFade
+                else -> R.id.divideLine
+            }
         )
-        val checked = if (store.wallpaperEnabled) 1 else 0
+
         AlertDialog.Builder(this)
             .setTitle(R.string.wallpaper_title)
-            .setSingleChoiceItems(labels, checked) { d, i ->
-                store.wallpaperEnabled = i == 1
-                if (i == 1) {
+            .setView(view)
+            .setPositiveButton(R.string.done) { _, _ ->
+                store.wallpaperEnabled = enable.isChecked
+                store.wallpaperSolidPct = seek.progress
+                when (divide.checkedRadioButtonId) {
+                    R.id.divideLine -> { store.divideFrozen = true; store.divideStyle = Wallpaper.STYLE_LINE }
+                    R.id.divideArc -> { store.divideFrozen = true; store.divideStyle = Wallpaper.STYLE_ARC }
+                    R.id.divideFade -> { store.divideFrozen = true; store.divideStyle = Wallpaper.STYLE_FADE }
+                    else -> store.divideFrozen = false
+                }
+                if (enable.isChecked) {
                     ArtWidgetProvider.pushAsync(this)
                     toast(getString(R.string.wallpaper_applied))
                 }
-                d.dismiss()
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()

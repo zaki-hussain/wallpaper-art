@@ -7,7 +7,6 @@ import android.content.Context
 import android.os.Build
 import android.widget.RemoteViews
 import dev.artwidget.art.ArtRenderer
-import dev.artwidget.art.Generator
 
 class ArtWidgetProvider : AppWidgetProvider() {
 
@@ -40,13 +39,12 @@ class ArtWidgetProvider : AppWidgetProvider() {
             executor.execute { push(app) }
         }
 
-        /** Stores a freshly generated art and pushes it everywhere, off the caller's thread. */
+        /** Stores the next design (honouring locks) and pushes it, off the caller's thread. */
         fun newArtAsync(context: Context, onDone: () -> Unit = {}) {
             val app = context.applicationContext
             executor.execute {
                 try {
-                    val store = ArtStore(app)
-                    store.current = Generator.newArt(store.enabledPatterns(), app.isSystemDark())
+                    ArtStore(app).refreshArt(app.isSystemDark())
                     push(app)
                 } finally {
                     onDone()
