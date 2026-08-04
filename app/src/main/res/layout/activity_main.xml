@@ -12,85 +12,65 @@
         android:layout_weight="1"
         android:contentDescription="@string/art_preview" />
 
+    <!-- Shuffle actions on the left; save and the matching locks on the right. -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btnNew"
-            style="@style/ActionButton"
-            android:layout_marginEnd="8dp"
-            android:text="@string/btn_new" />
-
-        <Button
-            android:id="@+id/btnPattern"
-            style="@style/ActionButton"
-            android:layout_marginEnd="8dp"
-            android:text="@string/btn_pattern" />
-
-        <Button
-            android:id="@+id/btnColours"
-            style="@style/ActionButton"
-            android:layout_marginEnd="8dp"
-            android:text="@string/btn_colours" />
-
-        <Button
-            android:id="@+id/btnSave"
-            style="@style/ActionButton"
-            android:text="@string/btn_save" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/lock_label"
-            android:textColor="@color/text_dim"
-            android:textSize="13sp" />
-
-        <CheckBox
-            android:id="@+id/lockPattern"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:text="@string/btn_pattern"
-            android:textColor="@color/text_dim"
-            android:textSize="13sp" />
-
-        <CheckBox
-            android:id="@+id/lockColours"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:text="@string/btn_colours"
-            android:textColor="@color/text_dim"
-            android:textSize="13sp" />
-
-        <View
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnHide"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:background="@drawable/btn_quiet_bg"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:stateListAnimator="@null"
-            android:text="@string/btn_hide"
-            android:textAllCaps="false"
-            android:textColor="@color/text_dim"
-            android:textSize="13sp" />
+            <Button
+                android:id="@+id/btnShuffleBoth"
+                style="@style/ActionButton"
+                android:drawableStart="@drawable/ic_shuffle"
+                android:text="@string/btn_shuffle_both" />
+
+            <Button
+                android:id="@+id/btnShufflePattern"
+                style="@style/ActionButton"
+                android:layout_marginTop="8dp"
+                android:drawableStart="@drawable/ic_shuffle"
+                android:text="@string/btn_pattern" />
+
+            <Button
+                android:id="@+id/btnShuffleColours"
+                style="@style/ActionButton"
+                android:layout_marginTop="8dp"
+                android:drawableStart="@drawable/ic_shuffle"
+                android:text="@string/btn_colours" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="2"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnSave"
+                style="@style/ActionButton"
+                android:drawableStart="@drawable/ic_save"
+                android:text="@string/btn_save" />
+
+            <CheckBox
+                android:id="@+id/lockPattern"
+                style="@style/LockToggle"
+                android:layout_marginTop="8dp"
+                android:text="@string/btn_pattern" />
+
+            <CheckBox
+                android:id="@+id/lockColours"
+                style="@style/LockToggle"
+                android:layout_marginTop="8dp"
+                android:text="@string/btn_colours" />
+        </LinearLayout>
     </LinearLayout>
 
     <TextView
@@ -123,21 +103,27 @@
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/btnHide"
+            style="@style/QuietButton"
+            android:layout_marginEnd="6dp"
+            android:text="@string/btn_hide" />
+
+        <Button
             android:id="@+id/btnPatterns"
             style="@style/QuietButton"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="6dp"
             android:text="@string/btn_patterns" />
 
         <Button
             android:id="@+id/btnShare"
             style="@style/QuietButton"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="6dp"
             android:text="@string/btn_share" />
 
         <Button
             android:id="@+id/btnAuto"
             style="@style/QuietButton"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="6dp"
             android:text="@string/btn_auto" />
 
         <Button

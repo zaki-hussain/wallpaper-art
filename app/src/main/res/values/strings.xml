@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Wallpaper Art</string>
     <string name="art_preview">Art preview</string>
-    <string name="btn_new">New</string>
+    <string name="btn_shuffle_both">Pattern + Colours</string>
     <string name="btn_pattern">Pattern</string>
     <string name="btn_colours">Colours</string>
     <string name="btn_save">Save</string>
@@ -39,7 +39,6 @@
     <string name="wallpaper_applied">Wallpaper set</string>
     <string name="blur_switch">Blur the bottom (home screen)</string>
     <string name="blur_pct_label">Blur starts %1$d%% from the bottom</string>
-    <string name="lock_label">Lock</string>
     <string name="btn_hide">Hide</string>
     <string name="pattern_hidden">Pattern hidden</string>
     <string name="last_pattern">Can\'t hide the last pattern</string>

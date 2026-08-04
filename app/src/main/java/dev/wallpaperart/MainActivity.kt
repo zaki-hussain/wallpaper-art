@@ -45,13 +45,13 @@ class MainActivity : Activity() {
         savedLabel = findViewById(R.id.savedLabel)
         roundOutline(artView, 24f)
 
-        findViewById<Button>(R.id.btnNew).setOnClickListener {
+        findViewById<Button>(R.id.btnShuffleBoth).setOnClickListener {
             setCurrent(store.refreshArt(isSystemDark()))
         }
-        findViewById<Button>(R.id.btnPattern).setOnClickListener {
+        findViewById<Button>(R.id.btnShufflePattern).setOnClickListener {
             setCurrent(Generator.switchPattern(current(), store.enabledPatterns()))
         }
-        findViewById<Button>(R.id.btnColours).setOnClickListener {
+        findViewById<Button>(R.id.btnShuffleColours).setOnClickListener {
             setCurrent(Generator.switchColors(current(), isSystemDark()))
         }
         findViewById<Button>(R.id.btnSave).setOnClickListener {
