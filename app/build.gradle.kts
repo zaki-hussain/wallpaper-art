@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "dev.artwidget"
+    namespace = "dev.wallpaperart"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "dev.artwidget"
+        applicationId = "dev.wallpaperart"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
