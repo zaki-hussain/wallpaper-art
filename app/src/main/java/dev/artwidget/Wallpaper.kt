@@ -71,24 +71,25 @@ object Wallpaper {
     }
 
     /**
-     * Frosts the bottom [blurPct] percent of [art]: the art continues underneath but
-     * properly blurred, so dock icons sit on calm texture. The blur eases in over a
-     * short ramp below the start line (no hard edge), and a faint wash of [tint]
-     * lifts icon contrast. Draws into [art].
+     * Frosts the bottom [blurPct] percent of [art]: everything below the start line is
+     * fully blurred (the art continues underneath, so dock icons sit on calm texture),
+     * and the frost fades out over a small band just *above* the line — the selected
+     * region itself is never half-done. A faint wash of [tint] lifts icon contrast.
+     * Draws into [art].
      */
     fun blurBottom(art: Bitmap, tint: Int, blurPct: Int): Bitmap {
         if (blurPct <= 0) return art
         val w = art.width.toFloat()
         val h = art.height.toFloat()
         val splitY = h * (100 - blurPct.coerceAtMost(90)) / 100f
-        val band = minOf(h * 0.06f, (h - splitY) * 0.4f).coerceAtLeast(1f)
+        val band = minOf(h * 0.05f, splitY)   // taper lives above the line
         val soft = blurred(art)
         val canvas = Canvas(art)
 
-        // Blurred layer masked by a vertical alpha ramp: invisible at the start line,
-        // fully frosted a short way below it.
+        // Blurred layer masked by a vertical alpha ramp: invisible at the top of the
+        // taper, fully frosted from the start line down.
         val mask = LinearGradient(
-            0f, splitY, 0f, splitY + band,
+            0f, splitY - band, 0f, splitY,
             0x00FFFFFF, 0xFFFFFFFF.toInt(), Shader.TileMode.CLAMP
         )
         val frost = Paint().apply {
@@ -97,17 +98,17 @@ object Wallpaper {
                 mask, PorterDuff.Mode.DST_IN
             )
         }
-        canvas.drawRect(0f, splitY, w, h, frost)
+        canvas.drawRect(0f, splitY - band, w, h, frost)
 
         // A whisper of the palette background over the frost, same ramp.
         val wash = Paint().apply {
             shader = LinearGradient(
-                0f, splitY, 0f, splitY + band,
+                0f, splitY - band, 0f, splitY,
                 tint and 0x00FFFFFF, (0x30 shl 24) or (tint and 0x00FFFFFF),
                 Shader.TileMode.CLAMP
             )
         }
-        canvas.drawRect(0f, splitY, w, h, wash)
+        canvas.drawRect(0f, splitY - band, w, h, wash)
         return art
     }
 
