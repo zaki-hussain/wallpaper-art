@@ -40,13 +40,13 @@ class MainActivity : Activity() {
         roundOutline(artView, 24f)
 
         findViewById<Button>(R.id.btnNew).setOnClickListener {
-            setCurrent(Generator.newArt(store.enabledPatterns()))
+            setCurrent(Generator.newArt(store.enabledPatterns(), isSystemDark()))
         }
         findViewById<Button>(R.id.btnPattern).setOnClickListener {
             setCurrent(Generator.switchPattern(current(), store.enabledPatterns()))
         }
         findViewById<Button>(R.id.btnColours).setOnClickListener {
-            setCurrent(Generator.switchColors(current()))
+            setCurrent(Generator.switchColors(current(), isSystemDark()))
         }
         findViewById<Button>(R.id.btnSave).setOnClickListener {
             if (store.addSaved(current())) {
@@ -59,6 +59,7 @@ class MainActivity : Activity() {
         findViewById<Button>(R.id.btnPatterns).setOnClickListener { showPatternsDialog() }
         findViewById<Button>(R.id.btnShare).setOnClickListener { showShareDialog() }
         findViewById<Button>(R.id.btnAuto).setOnClickListener { showAutoRefreshDialog() }
+        findViewById<Button>(R.id.btnWallpaper).setOnClickListener { showWallpaperDialog() }
 
         refreshSaved()
     }
@@ -80,7 +81,7 @@ class MainActivity : Activity() {
     private fun setCurrent(spec: ArtSpec) {
         store.current = spec
         artView.spec = spec
-        ArtWidgetProvider.updateAllAsync(this)
+        ArtWidgetProvider.pushAsync(this)
     }
 
     private fun refreshSaved() {
@@ -150,6 +151,26 @@ class MainActivity : Activity() {
             .setSingleChoiceItems(options.map { it.second }.toTypedArray(), checked) { d, i ->
                 store.refreshIntervalMillis = options[i].first
                 RefreshReceiver.schedule(this)
+                d.dismiss()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun showWallpaperDialog() {
+        val labels = arrayOf(
+            getString(R.string.wallpaper_widget_only),
+            getString(R.string.wallpaper_also)
+        )
+        val checked = if (store.wallpaperEnabled) 1 else 0
+        AlertDialog.Builder(this)
+            .setTitle(R.string.wallpaper_title)
+            .setSingleChoiceItems(labels, checked) { d, i ->
+                store.wallpaperEnabled = i == 1
+                if (i == 1) {
+                    ArtWidgetProvider.pushAsync(this)
+                    toast(getString(R.string.wallpaper_applied))
+                }
                 d.dismiss()
             }
             .setNegativeButton(android.R.string.cancel, null)

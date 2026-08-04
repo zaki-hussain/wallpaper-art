@@ -86,6 +86,12 @@
         <Button
             android:id="@+id/btnAuto"
             style="@style/QuietButton"
+            android:layout_marginEnd="8dp"
             android:text="@string/btn_auto" />
+
+        <Button
+            android:id="@+id/btnWallpaper"
+            style="@style/QuietButton"
+            android:text="@string/btn_wallpaper" />
     </LinearLayout>
 </LinearLayout>

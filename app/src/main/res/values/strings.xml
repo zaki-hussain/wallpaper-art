@@ -34,4 +34,9 @@
     <string name="interval_hourly">Hourly</string>
     <string name="interval_6h">Every 6 hours</string>
     <string name="interval_daily">Daily</string>
+    <string name="btn_wallpaper">Wallpaper</string>
+    <string name="wallpaper_title">Wallpaper</string>
+    <string name="wallpaper_widget_only">Widget only</string>
+    <string name="wallpaper_also">Widget + wallpaper</string>
+    <string name="wallpaper_applied">Wallpaper set</string>
 </resources>

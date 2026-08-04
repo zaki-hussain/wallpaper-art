@@ -2,6 +2,7 @@ package dev.artwidget
 
 import dev.artwidget.art.ArtRenderer
 import dev.artwidget.art.ArtSpec
+import dev.artwidget.art.Oklab
 import dev.artwidget.art.PaletteGen
 import dev.artwidget.art.Patterns
 import dev.artwidget.art.Rng
@@ -113,6 +114,19 @@ class EngineTest {
             val (w, h) = sizes[i % sizes.size]
             val bmp = ArtRenderer.render(spec, w, h)
             assertEquals(w, bmp.width)
+        }
+    }
+
+    @Test
+    fun paletteBackgroundFollowsRequestedMode() {
+        // dark=true must yield dark backgrounds and dark=false light ones, whatever
+        // strategy the seed lands on, so new art can match the system theme.
+        for (seed in 0L until 300L) {
+            val n = 1 + (seed % 6).toInt()
+            val darkBg = Oklab.argbToOklch(PaletteGen.generate(n, Rng(seed), true)[0])[0]
+            val lightBg = Oklab.argbToOklch(PaletteGen.generate(n, Rng(seed), false)[0])[0]
+            assertTrue("seed $seed: dark bg L=$darkBg", darkBg < 0.45)
+            assertTrue("seed $seed: light bg L=$lightBg", lightBg > 0.85)
         }
     }
 

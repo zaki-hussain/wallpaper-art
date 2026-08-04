@@ -17,7 +17,10 @@ class ArtWidgetProvider : AppWidgetProvider() {
 
     override fun onEnabled(context: Context) = RefreshReceiver.schedule(context)
 
-    override fun onDisabled(context: Context) = RefreshReceiver.cancel(context)
+    override fun onDisabled(context: Context) {
+        // Keep the alarm when the art also drives the wallpaper — that outlives widgets.
+        if (!ArtStore(context).wallpaperEnabled) RefreshReceiver.cancel(context)
+    }
 
     override fun onAppWidgetOptionsChanged(
         context: Context,
@@ -31,31 +34,31 @@ class ArtWidgetProvider : AppWidgetProvider() {
     companion object {
         private val executor = java.util.concurrent.Executors.newSingleThreadExecutor()
 
-        /** Re-renders every placed widget off the caller's thread. */
-        fun updateAllAsync(context: Context) {
+        /** Re-renders every widget and, when enabled, the wallpaper, off the caller's thread. */
+        fun pushAsync(context: Context) {
             val app = context.applicationContext
-            executor.execute { updateAll(app) }
+            executor.execute { push(app) }
         }
 
-        /** Stores a freshly generated art and re-renders every placed widget, off-thread. */
+        /** Stores a freshly generated art and pushes it everywhere, off the caller's thread. */
         fun newArtAsync(context: Context, onDone: () -> Unit = {}) {
             val app = context.applicationContext
             executor.execute {
                 try {
                     val store = ArtStore(app)
-                    store.current = Generator.newArt(store.enabledPatterns())
-                    updateAll(app)
+                    store.current = Generator.newArt(store.enabledPatterns(), app.isSystemDark())
+                    push(app)
                 } finally {
                     onDone()
                 }
             }
         }
 
-        /** Re-renders every placed widget with the store's current art. */
-        fun updateAll(context: Context) {
+        private fun push(context: Context) {
             val manager = AppWidgetManager.getInstance(context)
             val ids = manager.getAppWidgetIds(ComponentName(context, ArtWidgetProvider::class.java))
             ids.forEach { update(context, manager, it) }
+            Wallpaper.applyIfEnabled(context)
         }
 
         private fun update(context: Context, manager: AppWidgetManager, id: Int) {
