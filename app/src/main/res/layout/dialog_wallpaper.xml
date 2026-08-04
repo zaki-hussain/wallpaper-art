@@ -38,43 +38,9 @@
         android:textColor="@color/text_dim"
         android:textSize="13sp" />
 
-    <RadioGroup
-        android:id="@+id/divideGroup"
+    <Spinner
+        android:id="@+id/divideSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/divideRandom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/divide_random"
-            android:textColor="@color/text"
-            android:textSize="13sp" />
-
-        <RadioButton
-            android:id="@+id/divideLine"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/divide_line"
-            android:textColor="@color/text"
-            android:textSize="13sp" />
-
-        <RadioButton
-            android:id="@+id/divideArc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/divide_arc"
-            android:textColor="@color/text"
-            android:textSize="13sp" />
-
-        <RadioButton
-            android:id="@+id/divideFade"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/divide_fade"
-            android:textColor="@color/text"
-            android:textSize="13sp" />
-    </RadioGroup>
+        android:layout_marginTop="4dp" />
 </LinearLayout>
