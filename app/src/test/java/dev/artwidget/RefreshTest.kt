@@ -69,7 +69,7 @@ class RefreshTest {
     }
 
     @Test
-    fun blurBottomFrostsBelowTheLineOnly() {
+    fun blurBottomFullyFrostsBelowTheLine() {
         // High-frequency stripes: any real blur must average them into mid-tones.
         val art = Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888)
         val canvas = android.graphics.Canvas(art)
@@ -79,14 +79,16 @@ class RefreshTest {
             canvas.drawRect(x.toFloat(), 0f, x + 4f, 200f, paint)
         }
         val topBefore = art.getPixel(50, 5)
-        val out = Wallpaper.blurBottom(art, Color.RED, 15)   // blur starts at y = 170
+        val out = Wallpaper.blurBottom(art, Color.RED, 15)   // line at y = 170, taper above
 
-        assertEquals(topBefore, out.getPixel(50, 5))          // above the line untouched
-        val frosted = out.getPixel(50, 195)
-        assertTrue(
-            "bottom should be blurred, got ${Integer.toHexString(frosted)}",
-            frosted != Color.BLACK && frosted != Color.WHITE
-        )
+        assertEquals(topBefore, out.getPixel(50, 5))          // far above the taper: untouched
+        for (y in intArrayOf(172, 185, 198)) {                // below the line: fully frosted
+            val px = out.getPixel(50, y)
+            assertTrue(
+                "y=$y should be blurred, got ${Integer.toHexString(px)}",
+                px != Color.BLACK && px != Color.WHITE
+            )
+        }
 
         val untouched = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888)
         assertSame(untouched, Wallpaper.blurBottom(untouched, Color.RED, 0))
