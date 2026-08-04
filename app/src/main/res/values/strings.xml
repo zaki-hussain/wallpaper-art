@@ -44,5 +44,23 @@
     <string name="divide_line">Line</string>
     <string name="divide_arc">Arc</string>
     <string name="divide_fade">Fade</string>
+    <string name="divide_wave">Wave</string>
+    <string name="divide_scallop">Scallop</string>
+    <string name="divide_zigzag">Zigzag</string>
+    <string name="divide_diagonal">Diagonal</string>
+    <string name="divide_mountains">Mountains</string>
     <string name="lock_label">Lock</string>
+
+    <!-- Order must match Wallpaper.STYLES, with Random first. -->
+    <string-array name="divide_options">
+        <item>@string/divide_random</item>
+        <item>@string/divide_line</item>
+        <item>@string/divide_arc</item>
+        <item>@string/divide_fade</item>
+        <item>@string/divide_wave</item>
+        <item>@string/divide_scallop</item>
+        <item>@string/divide_zigzag</item>
+        <item>@string/divide_diagonal</item>
+        <item>@string/divide_mountains</item>
+    </string-array>
 </resources>

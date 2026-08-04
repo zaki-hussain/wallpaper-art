@@ -42,6 +42,22 @@ class RenderGalleryTest {
         }
     }
 
+    @Test
+    fun renderDivideGallery() {
+        val outDir = File(System.getProperty("artwidget.renders") ?: "build/renders")
+        outDir.mkdirs()
+        val rng = Rng(5L)
+        val spec = ArtSpec(
+            dev.artwidget.art.patterns.BauhausPattern.id,
+            rng.nextLong(),
+            PaletteGen.generate(5, rng, dark = false)
+        )
+        for (style in Wallpaper.STYLES) {
+            val art = ArtRenderer.render(spec, 540, 1200)
+            save(Wallpaper.compose(art, spec.colors[0], 30, style, spec.seed), File(outDir, "divide_$style.png"))
+        }
+    }
+
     private fun save(bitmap: Bitmap, file: File) {
         FileOutputStream(file).use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
     }

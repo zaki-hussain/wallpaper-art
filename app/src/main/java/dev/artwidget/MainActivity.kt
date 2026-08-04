@@ -9,13 +9,14 @@ import android.graphics.Outline
 import android.os.Bundle
 import android.view.View
 import android.view.ViewOutlineProvider
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.RadioGroup
 import android.widget.SeekBar
+import android.widget.Spinner
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
@@ -175,7 +176,7 @@ class MainActivity : Activity() {
         val enable = view.findViewById<Switch>(R.id.switchWallpaper)
         val label = view.findViewById<TextView>(R.id.solidLabel)
         val seek = view.findViewById<SeekBar>(R.id.solidSeek)
-        val divide = view.findViewById<RadioGroup>(R.id.divideGroup)
+        val divide = view.findViewById<Spinner>(R.id.divideSpinner)
 
         enable.isChecked = store.wallpaperEnabled
         seek.progress = store.wallpaperSolidPct
@@ -187,13 +188,12 @@ class MainActivity : Activity() {
             override fun onStartTrackingTouch(sb: SeekBar?) {}
             override fun onStopTrackingTouch(sb: SeekBar?) {}
         })
-        divide.check(
-            if (!store.divideFrozen) R.id.divideRandom
-            else when (store.divideStyle) {
-                Wallpaper.STYLE_ARC -> R.id.divideArc
-                Wallpaper.STYLE_FADE -> R.id.divideFade
-                else -> R.id.divideLine
-            }
+        divide.adapter = ArrayAdapter.createFromResource(
+            this, R.array.divide_options, android.R.layout.simple_spinner_item
+        ).also { it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+        divide.setSelection(
+            if (!store.divideFrozen) 0
+            else Wallpaper.STYLES.indexOf(store.divideStyle).coerceAtLeast(0) + 1
         )
 
         AlertDialog.Builder(this)
@@ -202,11 +202,12 @@ class MainActivity : Activity() {
             .setPositiveButton(R.string.done) { _, _ ->
                 store.wallpaperEnabled = enable.isChecked
                 store.wallpaperSolidPct = seek.progress
-                when (divide.checkedRadioButtonId) {
-                    R.id.divideLine -> { store.divideFrozen = true; store.divideStyle = Wallpaper.STYLE_LINE }
-                    R.id.divideArc -> { store.divideFrozen = true; store.divideStyle = Wallpaper.STYLE_ARC }
-                    R.id.divideFade -> { store.divideFrozen = true; store.divideStyle = Wallpaper.STYLE_FADE }
-                    else -> store.divideFrozen = false
+                val pick = divide.selectedItemPosition
+                if (pick in 1..Wallpaper.STYLES.size) {
+                    store.divideFrozen = true
+                    store.divideStyle = Wallpaper.STYLES[pick - 1]
+                } else {
+                    store.divideFrozen = false
                 }
                 if (enable.isChecked) {
                     ArtWidgetProvider.pushAsync(this)
