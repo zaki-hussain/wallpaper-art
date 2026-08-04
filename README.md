@@ -1,4 +1,4 @@
-# Art Wallpaper
+# Wallpaper Art
 
 Minimal Android app that generates procedural art and sets it as your wallpaper.
 
