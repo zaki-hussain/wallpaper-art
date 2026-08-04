@@ -1,6 +1,7 @@
 package dev.artwidget
 
 import android.content.Context
+import android.content.res.Configuration
 import dev.artwidget.art.ArtSpec
 import dev.artwidget.art.Generator
 import dev.artwidget.art.Pattern
@@ -23,6 +24,11 @@ class ArtStore(context: Context) {
     var refreshIntervalMillis: Long
         get() = prefs.getLong(KEY_INTERVAL, 0L)
         set(value) = prefs.edit().putLong(KEY_INTERVAL, value).apply()
+
+    /** When true, every art change is also applied as the system wallpaper. */
+    var wallpaperEnabled: Boolean
+        get() = prefs.getBoolean(KEY_WALLPAPER, false)
+        set(value) = prefs.edit().putBoolean(KEY_WALLPAPER, value).apply()
 
     fun saved(): List<ArtSpec> {
         val raw = prefs.getString(KEY_SAVED, null) ?: return emptyList()
@@ -68,5 +74,10 @@ class ArtStore(context: Context) {
         const val KEY_SAVED = "saved"
         const val KEY_DISABLED = "disabled"
         const val KEY_INTERVAL = "interval"
+        const val KEY_WALLPAPER = "wallpaper"
     }
 }
+
+/** Whether the system is in dark mode right now; newly generated palettes match it. */
+fun Context.isSystemDark(): Boolean =
+    resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
