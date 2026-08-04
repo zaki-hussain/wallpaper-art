@@ -52,13 +52,13 @@ class RefreshTest {
     }
 
     @Test
-    fun fadeAppliesToHomeScreenOnly() {
+    fun blurAppliesToHomeScreenOnly() {
         val context = RuntimeEnvironment.getApplication()
         val store = ArtStore(context)
         val shadow = Shadows.shadowOf(WallpaperManager.getInstance(context))
         store.wallpaperEnabled = true
-        store.fadeEnabled = true
-        store.fadePct = 30
+        store.blurEnabled = true
+        store.blurPct = 30
 
         Wallpaper.applyIfEnabled(context)
         val home = shadow.getBitmap(WallpaperManager.FLAG_SYSTEM)
@@ -66,25 +66,30 @@ class RefreshTest {
         assertNotNull(home)
         assertNotNull(lock)
         assertNotSame(lock, home)
-        // The home screen's bottom row is exactly the palette background.
-        val bg = store.currentOrCreate().colors[0]
-        assertEquals(bg, home!!.getPixel(home.width / 2, home.height - 1))
     }
 
     @Test
-    fun fadeIsSolidAtBottomAndGentleAboveTheStart() {
+    fun blurBottomFrostsBelowTheLineOnly() {
+        // High-frequency stripes: any real blur must average them into mid-tones.
         val art = Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888)
-        art.eraseColor(Color.RED)
-        val out = Wallpaper.fade(art, Color.GREEN, 15)   // fade starts at y = 170
-        assertEquals(Color.RED, out.getPixel(50, 5))
-        assertEquals(Color.RED, out.getPixel(50, 168))
-        assertEquals(Color.GREEN, out.getPixel(50, 199))
-        val mid = out.getPixel(50, 185)
-        assertTrue("mid-fade should blend, got ${Integer.toHexString(mid)}",
-            mid != Color.RED && mid != Color.GREEN)
+        val canvas = android.graphics.Canvas(art)
+        val paint = android.graphics.Paint()
+        for (x in 0 until 100 step 4) {
+            paint.color = if ((x / 4) % 2 == 0) Color.BLACK else Color.WHITE
+            canvas.drawRect(x.toFloat(), 0f, x + 4f, 200f, paint)
+        }
+        val topBefore = art.getPixel(50, 5)
+        val out = Wallpaper.blurBottom(art, Color.RED, 15)   // blur starts at y = 170
+
+        assertEquals(topBefore, out.getPixel(50, 5))          // above the line untouched
+        val frosted = out.getPixel(50, 195)
+        assertTrue(
+            "bottom should be blurred, got ${Integer.toHexString(frosted)}",
+            frosted != Color.BLACK && frosted != Color.WHITE
+        )
 
         val untouched = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888)
-        assertSame(untouched, Wallpaper.fade(untouched, Color.GREEN, 0))
+        assertSame(untouched, Wallpaper.blurBottom(untouched, Color.RED, 0))
     }
 
     @Test

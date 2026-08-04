@@ -30,15 +30,15 @@ class ArtStore(context: Context) {
         get() = prefs.getBoolean(KEY_WALLPAPER, false)
         set(value) = prefs.edit().putBoolean(KEY_WALLPAPER, value).apply()
 
-    /** Fade the home wallpaper into a solid colour at the bottom (lock screen stays full art). */
-    var fadeEnabled: Boolean
-        get() = prefs.getBoolean(KEY_FADE_ON, false)
-        set(value) = prefs.edit().putBoolean(KEY_FADE_ON, value).apply()
+    /** Blur the bottom of the home wallpaper (lock screen stays full art). */
+    var blurEnabled: Boolean
+        get() = prefs.getBoolean(KEY_BLUR_ON, false)
+        set(value) = prefs.edit().putBoolean(KEY_BLUR_ON, value).apply()
 
-    /** Percent of screen height, from the bottom, over which the home wallpaper fades. */
-    var fadePct: Int
-        get() = prefs.getInt(KEY_FADE_PCT, 20)
-        set(value) = prefs.edit().putInt(KEY_FADE_PCT, value.coerceIn(0, 60)).apply()
+    /** Percent of screen height, from the bottom, that gets blurred. */
+    var blurPct: Int
+        get() = prefs.getInt(KEY_BLUR_PCT, 20)
+        set(value) = prefs.edit().putInt(KEY_BLUR_PCT, value.coerceIn(0, 60)).apply()
 
     /** When true, refreshes keep the current pattern. */
     var patternLocked: Boolean
@@ -105,8 +105,8 @@ class ArtStore(context: Context) {
         const val KEY_DISABLED = "disabled"
         const val KEY_INTERVAL = "interval"
         const val KEY_WALLPAPER = "wallpaper"
-        const val KEY_FADE_ON = "fadeOn"
-        const val KEY_FADE_PCT = "fadePct"
+        const val KEY_BLUR_ON = "blurOn"
+        const val KEY_BLUR_PCT = "blurPct"
         const val KEY_LOCK_PATTERN = "lockPattern"
         const val KEY_LOCK_COLORS = "lockColors"
     }
